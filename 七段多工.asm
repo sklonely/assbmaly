@@ -1,0 +1,64 @@
+; P3.4 P3.3
+KEYDATA	 	EQU 30H;KEY TEMP
+KEYDATA0 	EQU 40H
+KEYDATA1 	EQU 41H
+KEYDATA2 	EQU 42H
+KEYDATA3	EQU 43H
+
+MOV DPTR,#TABLE
+MOV KEYDATA0, #192
+MOV KEYDATA1,#249
+MOV KEYDATA2,#164
+MOV KEYDATA3,#176
+MOV R1,#40H;多功用計數器 初始設定: 指標指在 KEYDATA0上
+;--------------------------------------------------------------
+JMP DISPLAY
+COUNERTADD:;將 站存在KETDATA中的值丟入 KETDATA_0~3中 並地址+1
+	MOV 	A,R1
+	CJNE	A,#43H,ADD_COUNTER_1;ELSE:
+		MOV 	R1,#40H
+		MOV 	@R1,KEYDATA
+		RET
+	ADD_COUNTER_1:;IF(A!=43):
+		INC 	A
+		MOV 	R1,A
+		MOV 	@R1,KEYDATA
+	RET
+;--------------------------------------------------------------
+DISPLAY:
+	MOV P3,#11111111B		
+	MOV P1, KEYDATA0
+	CALL delay
+	
+	MOV P3,#11110111B		
+	MOV P1, KEYDATA1
+	CALL delay
+	
+	MOV P3,#11101111B				
+	MOV P1, KEYDATA2
+	CALL delay
+	
+	MOV P3,#11100111B		
+	MOV P1, KEYDATA3
+	CALL delay
+	
+	JMP DISPLAY		
+
+; a crude delay
+delay:
+	MOV R0, #2
+	DJNZ R0, $
+	RET
+	
+TABLE:	;鍵盤
+	DB C0H
+	DB F9H
+	DB A4H
+	DB B0H
+	DB 99H
+	DB 92H
+	DB 82H
+	DB F8H
+	DB 80H
+	DB 90H
+	
